@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestão do Restaurante | Folha de Caixa (LM)</title>
+
+  <style>
+    :root{
+      /* CORES VIVAS (iguais à tua marca / cadeado) */
+      --teal:#32C9D8;
+      --purple:#4C3BBF;
+      --pink:#FF3D8D;
+
+      /* Tema CLARO */
+      --bg:#FFFFFF;
+      --bg2:#F6F8FF;
+      --card:#FFFFFF;
+      --ink:#0E1020;
+      --muted:rgba(14,16,32,.62);
+      --line:rgba(14,16,32,.12);
+
+      --shadow: 0 14px 36px rgba(25,30,60,.10);
+      --shadow2: 0 10px 22px rgba(25,30,60,.08);
+
+      --r:16px;
+      --r2:22px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--ink);
+      background:
+        radial-gradient(980px 560px at 10% 10%, rgba(50,201,216,.28), transparent 60%),
+        radial-gradient(900px 560px at 90% 16%, rgba(255,61,141,.20), transparent 60%),
+        radial-gradient(900px 560px at 60% 96%, rgba(76,59,191,.18), transparent 60%),
+        linear-gradient(180deg, #FFFFFF 0%, #F6F8FF 60%, #FFFFFF 100%);
+    }
+
+    .wrap{ max-width:1200px; margin:0 auto; padding:22px; }
+
+    /* TOP */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding:16px 18px;
+      border-radius: var(--r2);
+      background:
+        linear-gradient(135deg,
+          rgba(50,201,216,.25),
+          rgba(76,59,191,.18),
+          rgba(255,61,141,.18)
+        );
+      border:1px solid rgba(255,255,255,.65);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+    }
+
+    .brand{ display:flex; gap:14px; align-items:center; }
+    .logoBox{
+      width:56px; height:56px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.72);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .logoBox img{ width:100%; height:100%; object-fit:cover; }
+    .brand h1{ margin:0; font-size:15px; letter-spacing:.2px; }
+    .brand p{ margin:4px 0 0; font-size:12px; color: rgba(0,0,0,.62); }
+
+    .rightTop{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.72);
+      box-shadow: var(--shadow2);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    /* GRID */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .topbar{ position:relative; top:auto; }
+    }
+
+    /* CARD */
+    .card{
+      background: rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hd{
+      padding: 14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px;
+      border-bottom:1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(50,201,216,.10), rgba(255,61,141,.08), rgba(76,59,191,.08));
+    }
+    .hd h2{ margin:0; font-size:14px; letter-spacing:.2px; }
+    .bd{ padding: 14px 16px; }
+
+    /* TABS */
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .tab{
+      cursor:pointer;
+      user-select:none;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.70);
+      color: var(--ink);
+      padding:10px 12px;
+      border-radius: 999px;
+      font-size:12px;
+      display:flex; gap:8px; align-items:center;
+      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+      box-shadow: 0 8px 16px rgba(25,30,60,.06);
+    }
+    .tab:hover{ transform: translateY(-1px); border-color: rgba(76,59,191,.35); }
+    .tab.active{
+      border-color: rgba(76,59,191,.40);
+      background: linear-gradient(135deg, rgba(50,201,216,.18), rgba(76,59,191,.14), rgba(255,61,141,.14));
+    }
+
+    /* FORMS */
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    label{ font-size:12px; color: var(--muted); }
+    input, select, textarea{
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(14,16,32,.16);
+      border-radius: 12px;
+      padding: 10px 10px;
+      color: var(--ink);
+      outline: none;
+      font-size: 13px;
+      box-shadow: 0 8px 16px rgba(25,30,60,.06);
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(76,59,191,.40);
+      box-shadow: 0 10px 22px rgba(76,59,191,.12);
+    }
+    input[type="number"]{ width:120px; }
+    input[type="date"]{ width:160px; }
+    input[type="month"]{ width:160px; }
+    textarea{ min-height: 80px; resize: vertical; width:100%; }
+
+    /* BUTTONS */
+    .btn{
+      cursor:pointer;
+      border:1px solid rgba(14,16,32,.14);
+      background: rgba(255,255,255,.88);
+      color: var(--ink);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      display:inline-flex; gap:8px; align-items:center;
+      box-shadow: 0 10px 18px rgba(25,30,60,.08);
+      transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(76,59,191,.28); box-shadow: 0 12px 24px rgba(25,30,60,.10); }
+    .btn.primary{
+      color: #0B0D18;
+      border-color: rgba(76,59,191,.25);
+      background: linear-gradient(135deg, rgba(50,201,216,.35), rgba(76,59,191,.22), rgba(255,61,141,.24));
+    }
+    .btn.danger{
+      border-color: rgba(255,61,141,.35);
+      background: linear-gradient(135deg, rgba(255,61,141,.22), rgba(255,255,255,.75));
+    }
+    .btn.ok{
+      border-color: rgba(50,201,216,.35);
+      background: linear-gradient(135deg, rgba(50,201,216,.22), rgba(255,255,255,.78));
+    }
+
+    .hint{ font-size:12px; color: var(--muted); margin-top: 8px; }
+
+    /* TABLE */
+    .tableWrap{
+      width:100%;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 16px;
+      box-shadow: 0 10px 18px rgba(25,30,60,.06);
+      border: 1px solid rgba(14,16,32,.10);
+      background: rgba(255,255,255,.70);
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+    th, td{
+      padding: 10px 10px;
+      border-bottom:1px solid rgba(14,16,32,.10);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    th{
+      text-align:left;
+      font-size:12px;
+      color: var(--muted);
+      background:
+        linear-gradient(135deg, rgba(50,201,216,.10), rgba(76,59,191,.08), rgba(255,61,141,.08));
+      letter-spacing: .2px;
+      position: sticky;
+      top: 0;
+    }
+    tr:last-child td{ border-bottom:0; }
+    .right{ text-align:right; }
+    .mono{ font-variant-numeric: tabular-nums; }
+
+    /* KPI */
+    .kpi{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 760px){ .kpi{ grid-template-columns: 1fr 1fr; } }
+    .box{
+      border:1px solid rgba(14,16,32,.12);
+      background: rgba(255,255,255,.86);
+      border-radius: var(--r);
+      padding: 12px 12px;
+      box-shadow: 0 10px 18px rgba(25,30,60,.08);
+    }
+    .box .t{ font-size:12px; color: var(--muted); }
+    .box .v{ font-size:18px; margin-top:6px; }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    .split{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px){ .split{ grid-template-columns:1fr; } }
+
+    /* Inputs do ITEM: sempre aceitar texto completo */
+    .itemName{
+      width:100%;
+      min-width: 280px;
+    }
+
+    /* Botão remover visível (para telemóvel) */
+    .btnMini{
+      cursor:pointer;
+      border:1px solid rgba(14,16,32,.12);
+      background: rgba(255,255,255,.90);
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      box-shadow: 0 8px 14px rgba(25,30,60,.08);
+    }
+    .btnMini:hover{ border-color: rgba(255,61,141,.25); }
+    .badge{
+      padding:8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(14,16,32,.12);
+      box-shadow: 0 8px 14px rgba(25,30,60,.08);
+      font-size:12px;
+    }
+
+    .footer{
+      margin-top: 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logoBox" id="logoBox" title="Logo">
+          <span style="font-size:11px; color:rgba(0,0,0,.55)">LOGO</span>
+        </div>
+        <div>
+          <h1>Gestão do Restaurante — Folha de Caixa, Refeições e Despesas</h1>
+          
+        </div>
+      </div>
+
+      <div class="rightTop">
+        <div class="pill">
+          <span>Proprietário:</span>
+          <strong>Eng.º Leandro Tito Manjate</strong>
+        </div>
+
+        <input id="logoInput" type="file" accept="image/*" style="display:none">
+        <button class="btn primary" id="logoBtn" type="button">🎨 Carregar logo</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <div class="card">
+        <div class="hd">
+          <div class="tabs" id="tabs">
+            <div class="tab active" data-tab="vendas">🍽️ Refeições/Vendas</div>
+            <div class="tab" data-tab="caixa">💶 Folha de Caixa</div>
+            <div class="tab" data-tab="despesas">🧾 Despesas</div>
+            <div class="tab" data-tab="resumo">📊 Resumo</div>
+          </div>
+
+          <div class="row">
+            <span class="badge" id="saveState">🟢 Guardado</span>
+            <button class="btn ok" id="saveNowBtn" type="button">💾 Guardar</button>
+          </div>
+        </div>
+
+        <div class="bd">
+          <div class="row" style="justify-content:space-between; margin-bottom:12px;">
+            <div class="row">
+              <div>
+                <label>Data</label><br>
+                <input type="date" id="dayPicker">
+              </div>
+
+              <div>
+                <label>Moeda</label><br>
+                <select id="currencySel">
+                  <option value="€">€ (Euro)</option>
+                  <option value="MZN">MZN (Metical)</option>
+                </select>
+              </div>
+
+              <div>
+                <label>&nbsp;</label><br>
+                <button class="btn primary" id="newDayBtn" type="button">➕ Novo dia</button>
+              </div>
+
+              <div>
+                <label>&nbsp;</label><br>
+                <button class="btn" id="copyPrevBtn" type="button" title="Copia itens e preços do dia anterior">📋 Copiar dia anterior</button>
+              </div>
+            </div>
+
+            <div class="row">
+              <button class="btn" id="exportCSVBtn" type="button">⬇️ Exportar CSV</button>
+              <button class="btn" id="exportJSONBtn" type="button">⬇️ Backup (JSON)</button>
+
+              <input id="importJSONInput" type="file" accept="application/json" style="display:none">
+              <button class="btn" id="importJSONBtn" type="button">⬆️ Importar Backup</button>
+
+              <button class="btn danger" id="resetBtn" type="button">🧨 Reset</button>
+            </div>
+          </div>
+
+          <!-- VENDAS -->
+          <div class="section active" id="sec-vendas">
+            <div class="split">
+              <div>
+                <div class="row" style="justify-content:space-between; margin-bottom:8px;">
+                  <div>
+                    <h3 style="margin:0; font-size:13px;">Lista de Refeições (dia)</h3>
+                    <div style="font-size:12px; color:var(--muted)">Podes adicionar quantos itens quiseres — sem limite</div>
+                  </div>
+
+                  <!-- IMPORTANTE: ESTE É O BOTÃO QUE ADICIONA ITENS -->
+                  <button class="btn primary" id="addItemBtn" type="button">➕ Adicionar item</button>
+                </div>
+
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="width:40%;">Item</th>
+                        <th class="right" style="width:14%;">Qtd</th>
+                        <th class="right" style="width:16%;">Preço</th>
+                        <th class="right" style="width:16%;">Total</th>
+                        <th style="width:14%;">Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody id="itemsBody"></tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="3" class="right"><strong>Total Refeições</strong></td>
+                        <td class="right mono"><strong id="totalVendas">€0,00</strong></td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div class="hint">Para remover: usa o botão “Remover” (funciona no telemóvel e PC).</div>
+              </div>
+
+              <div>
+                <h3 style="margin:0 0 8px; font-size:13px;">Notas / Observações do dia</h3>
+                <textarea id="vendasObs" placeholder="Ex.: faltas de stock, reclamações, eventos, etc."></textarea>
+
+                <div style="height:12px"></div>
+
+                <div class="kpi">
+                  <div class="box">
+                    <div class="t">Total Refeições</div>
+                    <div class="v mono" id="kpiVendas">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">Total Despesas</div>
+                    <div class="v mono" id="kpiDespesas">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">Total Caixa (dinheiro contado)</div>
+                    <div class="v mono" id="kpiCash">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">Saldo do Dia (Vendas − Despesas)</div>
+                    <div class="v mono" id="kpiSaldo">€0,00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAIXA -->
+          <div class="section" id="sec-caixa">
+            <div class="split">
+              <div>
+                <h3 style="margin:0 0 8px; font-size:13px;">Contagem de Caixa (Moedas/Notas)</h3>
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Denominação</th>
+                        <th class="right">Qtd</th>
+                        <th class="right">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cashBody"></tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="2" class="right"><strong>Total Dinheiro</strong></td>
+                        <td class="right mono"><strong id="cashTotal">€0,00</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <h3 style="margin:0 0 8px; font-size:13px;">Resumo de Caixa (Dia)</h3>
+
+                <div class="row" style="gap:12px;">
+                  <div style="flex:1;">
+                    <label>Saldo anterior</label><br>
+                    <input type="number" id="saldoAnterior" step="0.01" placeholder="0.00">
+                  </div>
+                  <div style="flex:1;">
+                    <label>Entradas extra (+)</label><br>
+                    <input type="number" id="entradasExtra" step="0.01" placeholder="0.00">
+                  </div>
+                  <div style="flex:1;">
+                    <label>Saídas extra (−)</label><br>
+                    <input type="number" id="saidasExtra" step="0.01" placeholder="0.00">
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <h4 style="margin:10px 0 8px; font-size:12px; color:var(--muted);">Métodos de Pagamento (totais do dia)</h4>
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Método</th>
+                        <th class="right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Multibanco (MB)</td>
+                        <td class="right"><input type="number" id="payMB" step="0.01" placeholder="0.00"></td>
+                      </tr>
+                      <tr>
+                        <td>MBWay</td>
+                        <td class="right"><input type="number" id="payMBW" step="0.01" placeholder="0.00"></td>
+                      </tr>
+                      <tr>
+                        <td>Dinheiro (pagamentos)</td>
+                        <td class="right"><input type="number" id="payCash" step="0.01" placeholder="0.00"></td>
+                      </tr>
+                      <tr>
+                        <td>Outros</td>
+                        <td class="right"><input type="number" id="payOther" step="0.01" placeholder="0.00"></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td class="right"><strong>Total Pagamentos</strong></td>
+                        <td class="right mono"><strong id="payTotal">€0,00</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="kpi">
+                  <div class="box">
+                    <div class="t">Total Dia (Refeições)</div>
+                    <div class="v mono" id="caixaTotalDia">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">Saldo anterior</div>
+                    <div class="v mono" id="caixaSaldoAnt">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">A transportar (saldo)</div>
+                    <div class="v mono" id="caixaATrans">€0,00</div>
+                  </div>
+                  <div class="box">
+                    <div class="t">Diferença (Dinheiro contado − Pag. Dinheiro)</div>
+                    <div class="v mono" id="caixaDiff">€0,00</div>
+                  </div>
+                </div>
+
+                <div style="height:12px"></div>
+                <h4 style="margin:0 0 8px; font-size:12px; color:var(--muted);">Descrição / Movimentos</h4>
+                <textarea id="caixaDesc" placeholder="Ex.: trocos, depósitos, acertos, etc."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- DESPESAS -->
+          <div class="section" id="sec-despesas">
+            <div class="row" style="justify-content:space-between; margin-bottom:8px;">
+              <div>
+                <h3 style="margin:0; font-size:13px;">Despesas do Dia</h3>
+                <div style="font-size:12px; color:var(--muted)">Adiciona linhas e o total é automático.</div>
+              </div>
+              <button class="btn primary" id="addDespesaBtn" type="button">➕ Adicionar linha</button>
+            </div>
+
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:18%;">Categoria</th>
+                    <th style="width:16%;" class="right">Valor</th>
+                    <th style="width:52%;">Obs</th>
+                    <th style="width:14%;">Ação</th>
+                  </tr>
+                </thead>
+                <tbody id="despesasBody"></tbody>
+                <tfoot>
+                  <tr>
+                    <td class="right"><strong>Total</strong></td>
+                    <td class="right mono"><strong id="despesasTotal">€0,00</strong></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="kpi">
+              <div class="box">
+                <div class="t">Café</div>
+                <div class="v mono" id="sumCafe">€0,00</div>
+              </div>
+              <div class="box">
+                <div class="t">Almoços</div>
+                <div class="v mono" id="sumAlmSab">€0,00</div>
+              </div>
+              <div class="box">
+                <div class="t">Jantar</div>
+                <div class="v mono" id="sumAlmDia">€0,00</div>
+              </div>
+			  
+              <div class="box">
+                <div class="t">Casa</div>
+                <div class="v mono" id="sumCasa">€0,00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESUMO -->
+          <div class="section" id="sec-resumo">
+            <h3 style="margin:0 0 10px; font-size:13px;">Resumo (Mês)</h3>
+
+            <div class="row" style="gap:10px; margin-bottom:10px;">
+              <div>
+                <label>Mês</label><br>
+                <input type="month" id="monthPicker">
+              </div>
+              <div>
+                <label>&nbsp;</label><br>
+                <button class="btn" id="recalcMonthBtn" type="button">🔄 Atualizar</button>
+              </div>
+            </div>
+
+            <div class="kpi">
+              <div class="box">
+                <div class="t">Total Vendas (mês)</div>
+                <div class="v mono" id="mVendas">€0,00</div>
+              </div>
+              <div class="box">
+                <div class="t">Total Despesas (mês)</div>
+                <div class="v mono" id="mDespesas">€0,00</div>
+              </div>
+              <div class="box">
+                <div class="t">Resultado (mês)</div>
+                <div class="v mono" id="mResultado">€0,00</div>
+              </div>
+              <div class="box">
+                <div class="t">Dias registados</div>
+                <div class="v mono" id="mDias">0</div>
+              </div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th class="right">Vendas</th>
+                    <th class="right">Despesas</th>
+                    <th class="right">Resultado</th>
+                    <th class="right">A transportar</th>
+                  </tr>
+                </thead>
+                <tbody id="monthBody"></tbody>
+              </table>
+            </div>
+
+            <div class="hint">“A transportar” = saldo anterior + (vendas − despesas) + entradas extra − saídas extra.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <div class="hd">
+          <h2>Estado & Controlo</h2>
+          <div class="badge" id="uiCur">€</div>
+        </div>
+        <div class="bd">
+          <div class="kpi" style="grid-template-columns:1fr 1fr;">
+            <div class="box">
+              <div class="t">Data selecionada</div>
+              <div class="v mono" id="uiDate">—</div>
+            </div>
+            <div class="box">
+              <div class="t">Moeda</div>
+              <div class="v mono" id="uiCur2">€</div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="box">
+            <div style="font-size:13px; margin-bottom:8px;"><strong>Como funciona</strong></div>
+            <ul style="margin:0; padding-left:18px; color:var(--muted); font-size:12px; line-height:1.6;">
+              <li>Os dados ficam guardados neste navegador (mesmo offline).</li>
+              <li><strong>Adicionar item</strong> cria mais linhas (podes criar muitas).</li>
+              <li><strong>Exportar CSV</strong> abre no Excel.</li>
+              <li><strong>Backup JSON</strong> guarda tudo e <strong>Importar</strong> recupera.</li>
+              <li><strong>Reset</strong> apaga tudo (usa só quando tiveres a certeza).</li>
+            </ul>
+          </div>
+
+          <div class="footer">
+            <span>LM Cibersegurança • Cores vivas</span>
+            <span>Uso interno</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===========================
+   BASE DE DADOS (localStorage)
+=========================== */
+const STORAGE_KEY = "restaurante_lm_caixa_v2";
+
+const defaultItems = [
+  { name:"Prato do dia", qty:0, price:0 },
+  { name:"Outro prato", qty:0, price:0 },
+  { name:"Sopa", qty:0, price:0 },
+  { name:"3.ª noite", qty:0, price:0 },
+  { name:"3.ª pão", qty:0, price:0 },
+  { name:"B. peru", qty:0, price:0 },
+  { name:"B. flan", qty:0, price:0 }
+];
+
+const cashDenoms = [0.10,0.20,0.50,1,2,5,10,20,50,100,200].map(v => ({ denom:v, qty:0 }));
+
+const $ = (id)=>document.getElementById(id);
+
+function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function todayISO(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function monthISO(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+}
+function num(v){ const x = Number(v); return isFinite(x) ? x : 0; }
+
+function emptyDay(){
+  return {
+    items: deepClone(defaultItems),
+    vendasObs: "",
+    despesas: [{ cat:"Café", val:0, obs:"" }],
+    cash: deepClone(cashDenoms),
+    saldoAnterior: 0,
+    entradasExtra: 0,
+    saidasExtra: 0,
+    payMB: 0,
+    payMBW: 0,
+    payCash: 0,
+    payOther: 0,
+    caixaDesc: ""
+  };
+}
+
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return { settings:{ currency:"€", logoDataUrl:"" }, days:{} };
+    const db = JSON.parse(raw);
+    db.settings ??= { currency:"€", logoDataUrl:"" };
+    db.days ??= {};
+    return db;
+  }catch(e){
+    return { settings:{ currency:"€", logoDataUrl:"" }, days:{} };
+  }
+}
+
+let db = loadDB();
+let currentDay = todayISO();
+
+function saveDB(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  setSaved(true);
+}
+function setSaved(ok){
+  const el = $("saveState");
+  el.textContent = ok ? "🟢 Guardado" : "🟠 Por guardar…";
+}
+function markDirty(){
+  setSaved(false);
+  clearTimeout(markDirty._t);
+  markDirty._t = setTimeout(saveDB, 450);
+}
+
+function cur(){ return db.settings.currency || "€"; }
+function fmt(n){
+  const c = cur();
+  const v = num(n);
+  const s = v.toFixed(2).replace(".", ",");
+  return (c === "€") ? `€${s}` : `${s} ${c}`;
+}
+function ensureDay(dateISO){
+  if(!db.days[dateISO]) db.days[dateISO] = emptyDay();
+  const d = db.days[dateISO];
+
+  d.items ??= deepClone(defaultItems);
+  d.vendasObs ??= "";
+  d.despesas ??= [{cat:"Café", val:0, obs:""}];
+  d.cash ??= deepClone(cashDenoms);
+  d.saldoAnterior ??= 0;
+  d.entradasExtra ??= 0;
+  d.saidasExtra ??= 0;
+  d.payMB ??= 0;
+  d.payMBW ??= 0;
+  d.payCash ??= 0;
+  d.payOther ??= 0;
+  d.caixaDesc ??= "";
+
+  return d;
+}
+
+/* ===========================
+   CÁLCULOS
+=========================== */
+function totalVendasDay(d){ return d.items.reduce((s,it)=> s + num(it.qty)*num(it.price), 0); }
+function totalDespesasDay(d){ return d.despesas.reduce((s,x)=> s + num(x.val), 0); }
+function totalCashCount(d){ return d.cash.reduce((s,x)=> s + num(x.qty)*num(x.denom), 0); }
+function totalPays(d){ return num(d.payMB)+num(d.payMBW)+num(d.payCash)+num(d.payOther); }
+function aTransportar(d){
+  const res = totalVendasDay(d) - totalDespesasDay(d);
+  return num(d.saldoAnterior) + res + num(d.entradasExtra) - num(d.saidasExtra);
+}
+
+/* ===========================
+   RENDER: ITENS (VENDAS)
+   ✅ NÃO re-renderiza a cada tecla (aceita texto completo)
+   ✅ Botão “Adicionar item” funciona sempre
+=========================== */
+function renderItems(){
+  const d = ensureDay(currentDay);
+  const body = $("itemsBody");
+  body.innerHTML = "";
+
+  d.items.forEach((it, idx)=>{
+    const tr = document.createElement("tr");
+
+    // Item
+    const tdName = document.createElement("td");
+    const nameIn = document.createElement("input");
+    nameIn.type = "text";
+    nameIn.className = "itemName";
+    nameIn.value = it.name ?? "";
+    nameIn.placeholder = "Nome do item (ex.: Bifana grande)";
+
+    nameIn.addEventListener("input", ()=>{
+      it.name = nameIn.value;   // guarda enquanto escreve
+      markDirty();
+    });
+    nameIn.addEventListener("blur", ()=>{
+      it.name = (it.name || "").trim();
+      markDirty();
+    });
+    tdName.appendChild(nameIn);
+
+    // Qtd
+    const tdQty = document.createElement("td");
+    tdQty.className = "right";
+    const qtyIn = document.createElement("input");
+    qtyIn.type = "number";
+    qtyIn.step = "1";
+    qtyIn.value = it.qty ?? 0;
+    qtyIn.addEventListener("input", ()=>{
+      it.qty = num(qtyIn.value);
+      markDirty();
+      updateVendasFooter();
+      renderKPIs();
+    });
+    tdQty.appendChild(qtyIn);
+
+    // Preço
+    const tdPrice = document.createElement("td");
+    tdPrice.className = "right";
+    const prIn = document.createElement("input");
+    prIn.type = "number";
+    prIn.step = "0.01";
+    prIn.value = it.price ?? 0;
+    prIn.addEventListener("input", ()=>{
+      it.price = num(prIn.value);
+      markDirty();
+      updateVendasFooter();
+      renderKPIs();
+    });
+    tdPrice.appendChild(prIn);
+
+    // Total
+    const tdTot = document.createElement("td");
+    tdTot.className = "right mono";
+    tdTot.textContent = fmt(num(it.qty) * num(it.price));
+
+    // Ação
+    const tdAct = document.createElement("td");
+    const rm = document.createElement("button");
+    rm.type = "button";
+    rm.className = "btnMini";
+    rm.textContent = "Remover";
+    rm.addEventListener("click", ()=>{
+      if(confirm(`Remover o item "${(it.name||"").trim() || "sem nome"}"?`)){
+        d.items.splice(idx, 1);
+        markDirty();
+        renderItems();
+        renderKPIs();
+      }
+    });
+    tdAct.appendChild(rm);
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdQty);
+    tr.appendChild(tdPrice);
+    tr.appendChild(tdTot);
+    tr.appendChild(tdAct);
+
+    body.appendChild(tr);
+  });
+
+  $("vendasObs").value = d.vendasObs || "";
+  updateVendasFooter();
+}
+
+function updateVendasFooter(){
+  const d = ensureDay(currentDay);
+  // atualizar totals linha a linha (sem re-render completo)
+  Array.from($("itemsBody").children).forEach((tr, i)=>{
+    const it = d.items[i];
+    const tdTot = tr.children[3];
+    if(tdTot) tdTot.textContent = fmt(num(it.qty)*num(it.price));
+  });
+  $("totalVendas").textContent = fmt(totalVendasDay(d));
+}
+
+/* ===========================
+   RENDER: CAIXA
+=========================== */
+function renderCash(){
+  const d = ensureDay(currentDay);
+  const body = $("cashBody");
+  body.innerHTML = "";
+
+  d.cash.forEach((row)=>{
+    const tr = document.createElement("tr");
+
+    const tdD = document.createElement("td");
+    tdD.textContent = (cur()==="€") ? `€${row.denom}` : `${row.denom} ${cur()}`;
+
+    const tdQ = document.createElement("td");
+    tdQ.className="right";
+    const q = document.createElement("input");
+    q.type="number";
+    q.step="1";
+    q.value = row.qty ?? 0;
+    q.addEventListener("input", ()=>{
+      row.qty = num(q.value);
+      markDirty();
+      $("cashTotal").textContent = fmt(totalCashCount(d));
+      renderKPIs();
+    });
+    tdQ.appendChild(q);
+
+    const tdS = document.createElement("td");
+    tdS.className="right mono";
+    tdS.textContent = fmt(num(row.qty)*num(row.denom));
+
+    tr.appendChild(tdD); tr.appendChild(tdQ); tr.appendChild(tdS);
+    body.appendChild(tr);
+  });
+
+  $("cashTotal").textContent = fmt(totalCashCount(d));
+
+  $("saldoAnterior").value = d.saldoAnterior ?? 0;
+  $("entradasExtra").value = d.entradasExtra ?? 0;
+  $("saidasExtra").value = d.saidasExtra ?? 0;
+
+  $("payMB").value = d.payMB ?? 0;
+  $("payMBW").value = d.payMBW ?? 0;
+  $("payCash").value = d.payCash ?? 0;
+  $("payOther").value = d.payOther ?? 0;
+
+  $("caixaDesc").value = d.caixaDesc || "";
+}
+
+/* ===========================
+   RENDER: DESPESAS
+=========================== */
+function renderDespesas(){
+  const d = ensureDay(currentDay);
+  const body = $("despesasBody");
+  body.innerHTML = "";
+
+  d.despesas.forEach((x, idx)=>{
+    const tr = document.createElement("tr");
+
+    const tdC = document.createElement("td");
+    const sel = document.createElement("select");
+    ["Café","Almoços Sáb","Almoços Dia","Casa"].forEach(opt=>{
+      const o = document.createElement("option");
+      o.value = opt; o.textContent = opt;
+      sel.appendChild(o);
+    });
+    sel.value = x.cat || "Café";
+    sel.addEventListener("change", ()=>{
+      x.cat = sel.value;
+      markDirty();
+      updateDespesasFooter();
+      updateDespesasSums();
+      renderKPIs();
+    });
+    tdC.appendChild(sel);
+
+    const tdV = document.createElement("td");
+    tdV.className="right";
+    const v = document.createElement("input");
+    v.type="number";
+    v.step="0.01";
+    v.value = x.val ?? 0;
+    v.addEventListener("input", ()=>{
+      x.val = num(v.value);
+      markDirty();
+      updateDespesasFooter();
+      updateDespesasSums();
+      renderKPIs();
+    });
+    tdV.appendChild(v);
+
+    const tdO = document.createElement("td");
+    const o = document.createElement("input");
+    o.type="text";
+    o.value = x.obs || "";
+    o.placeholder = "Observação (opcional)";
+    o.style.width="100%";
+    o.addEventListener("input", ()=>{
+      x.obs = o.value;
+      markDirty();
+    });
+    tdO.appendChild(o);
+
+    const tdA = document.createElement("td");
+    const rm = document.createElement("button");
+    rm.type="button";
+    rm.className="btnMini";
+    rm.textContent = "Remover";
+    rm.addEventListener("click", ()=>{
+      if(confirm("Remover esta despesa?")){
+        d.despesas.splice(idx, 1);
+        if(d.despesas.length === 0) d.despesas.push({cat:"Café", val:0, obs:""});
+        markDirty();
+        renderDespesas();
+        renderKPIs();
+      }
+    });
+    tdA.appendChild(rm);
+
+    tr.appendChild(tdC); tr.appendChild(tdV); tr.appendChild(tdO); tr.appendChild(tdA);
+    body.appendChild(tr);
+  });
+
+  updateDespesasFooter();
+  updateDespesasSums();
+}
+
+function updateDespesasFooter(){
+  const d = ensureDay(currentDay);
+  $("despesasTotal").textContent = fmt(totalDespesasDay(d));
+}
+function updateDespesasSums(){
+  const d = ensureDay(currentDay);
+  const sums = { "Café":0, "Almoços Sáb":0, "Almoços Dia":0, "Casa":0 };
+  d.despesas.forEach(x => sums[x.cat] = (sums[x.cat]||0) + num(x.val));
+  $("sumCafe").textContent = fmt(sums["Café"]);
+  $("sumAlmSab").textContent = fmt(sums["Almoços Sáb"]);
+  $("sumAlmDia").textContent = fmt(sums["Almoços Dia"]);
+  $("sumCasa").textContent = fmt(sums["Casa"]);
+}
+
+/* ===========================
+   KPI + RESUMO MENSAL
+=========================== */
+function renderKPIs(){
+  const d = ensureDay(currentDay);
+  const v = totalVendasDay(d);
+  const de = totalDespesasDay(d);
+  const cash = totalCashCount(d);
+  const saldo = v - de;
+
+  $("kpiVendas").textContent = fmt(v);
+  $("kpiDespesas").textContent = fmt(de);
+  $("kpiCash").textContent = fmt(cash);
+  $("kpiSaldo").textContent = fmt(saldo);
+
+  $("caixaTotalDia").textContent = fmt(v);
+  $("caixaSaldoAnt").textContent = fmt(d.saldoAnterior);
+  $("payTotal").textContent = fmt(totalPays(d));
+  $("caixaATrans").textContent = fmt(aTransportar(d));
+  $("caixaDiff").textContent = fmt(cash - num(d.payCash));
+
+  $("uiDate").textContent = currentDay;
+  $("uiCur").textContent = cur();
+  $("uiCur2").textContent = cur();
+}
+
+function renderMonth(){
+  const m = $("monthPicker").value || monthISO();
+  const [Y,MM] = m.split("-");
+  const days = Object.keys(db.days).filter(k => k.startsWith(`${Y}-${MM}`)).sort();
+
+  let tv=0, td=0, res=0;
+  const body = $("monthBody");
+  body.innerHTML = "";
+
+  days.forEach(date=>{
+    const d = ensureDay(date);
+    const v = totalVendasDay(d);
+    const de = totalDespesasDay(d);
+    const r = v - de;
+    const at = aTransportar(d);
+
+    tv += v; td += de; res += r;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="mono">${date}</td>
+      <td class="right mono">${fmt(v)}</td>
+      <td class="right mono">${fmt(de)}</td>
+      <td class="right mono">${fmt(r)}</td>
+      <td class="right mono">${fmt(at)}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  $("mVendas").textContent = fmt(tv);
+  $("mDespesas").textContent = fmt(td);
+  $("mResultado").textContent = fmt(res);
+  $("mDias").textContent = String(days.length);
+}
+
+function renderAll(){
+  renderItems();
+  renderCash();
+  renderDespesas();
+  renderKPIs();
+  renderMonth();
+}
+
+/* ===========================
+   TABS
+=========================== */
+function setTab(name){
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.toggle("active", t.dataset.tab === name);
+  });
+  document.querySelectorAll(".section").forEach(s=>{
+    s.classList.toggle("active", s.id === `sec-${name}`);
+  });
+}
+
+/* ===========================
+   EXPORT / IMPORT
+=========================== */
+function download(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function safe(s){
+  const x = (s ?? "").toString();
+  return `"${x.replaceAll('"','""').replaceAll("\n"," ").replaceAll("\r"," ")}"`;
+}
+
+function exportCSV(){
+  const lines = [];
+  lines.push(["Data","Tipo","Item/Categoria","Qtd","Preço","Valor","Obs"].join(";"));
+
+  const keys = Object.keys(db.days).sort();
+  keys.forEach(date=>{
+    const d = ensureDay(date);
+
+    d.items.forEach(it=>{
+      const total = num(it.qty)*num(it.price);
+      lines.push([date,"Venda",safe((it.name||"").trim()),num(it.qty),num(it.price),total,safe(d.vendasObs)].join(";"));
+    });
+
+    d.despesas.forEach(x=>{
+      lines.push([date,"Despesa",safe(x.cat),"","",num(x.val),safe(x.obs)].join(";"));
+    });
+
+    lines.push([date,"Caixa","SaldoAnterior","","",""+num(d.saldoAnterior),safe(d.caixaDesc)].join(";"));
+    lines.push([date,"Caixa","EntradasExtra","","",""+num(d.entradasExtra),""].join(";"));
+    lines.push([date,"Caixa","SaidasExtra","","",""+num(d.saidasExtra),""].join(";"));
+    lines.push([date,"Pagamento","MB","","",""+num(d.payMB),""].join(";"));
+    lines.push([date,"Pagamento","MBWay","","",""+num(d.payMBW),""].join(";"));
+    lines.push([date,"Pagamento","Dinheiro","","",""+num(d.payCash),""].join(";"));
+    lines.push([date,"Pagamento","Outros","","",""+num(d.payOther),""].join(";"));
+  });
+
+  download(`restaurante_export_${monthISO()}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
+}
+
+function exportJSON(){
+  download("restaurante_backup.json", JSON.stringify(db, null, 2), "application/json;charset=utf-8");
+}
+
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const obj = JSON.parse(reader.result);
+      if(!obj || typeof obj !== "object") throw new Error("Formato inválido");
+      if(!obj.days) throw new Error("Backup sem 'days'");
+
+      db = obj;
+      db.settings ??= { currency:"€", logoDataUrl:"" };
+      db.days ??= {};
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+
+      $("currencySel").value = db.settings.currency || "€";
+      setLogo(db.settings.logoDataUrl || "");
+      ensureDay(currentDay);
+      renderAll();
+      saveDB();
+      alert("Backup importado com sucesso.");
+    }catch(e){
+      alert("Falha ao importar o backup: " + e.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ===========================
+   LOGO
+=========================== */
+function setLogo(dataUrl){
+  db.settings.logoDataUrl = dataUrl || "";
+  const box = $("logoBox");
+  box.innerHTML = "";
+  if(dataUrl){
+    const img = document.createElement("img");
+    img.src = dataUrl;
+    box.appendChild(img);
+  }else{
+    box.innerHTML = `<span style="font-size:11px; color:rgba(0,0,0,.55)">LOGO</span>`;
+  }
+  markDirty();
+}
+
+/* ===========================
+   EVENTS
+=========================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  currentDay = todayISO();
+  $("dayPicker").value = currentDay;
+  $("monthPicker").value = monthISO();
+
+  $("currencySel").value = db.settings.currency || "€";
+
+  if(db.settings.logoDataUrl) setLogo(db.settings.logoDataUrl);
+
+  ensureDay(currentDay);
+
+  $("tabs").addEventListener("click", (e)=>{
+    const t = e.target.closest(".tab");
+    if(!t) return;
+    setTab(t.dataset.tab);
+  });
+
+  $("saveNowBtn").addEventListener("click", ()=>{ saveDB(); alert("Guardado."); });
+
+  $("dayPicker").addEventListener("change", ()=>{
+    currentDay = $("dayPicker").value || todayISO();
+    ensureDay(currentDay);
+    renderAll();
+  });
+
+  $("currencySel").addEventListener("change", ()=>{
+    db.settings.currency = $("currencySel").value;
+    markDirty();
+    renderAll();
+  });
+
+  $("vendasObs").addEventListener("input", ()=>{
+    const d = ensureDay(currentDay);
+    d.vendasObs = $("vendasObs").value;
+    markDirty();
+  });
+
+  ["saldoAnterior","entradasExtra","saidasExtra","payMB","payMBW","payCash","payOther","caixaDesc"].forEach(id=>{
+    $(id).addEventListener("input", ()=>{
+      const d = ensureDay(currentDay);
+      if(id==="caixaDesc"){
+        d.caixaDesc = $(id).value;
+      }else{
+        d[id] = num($(id).value);
+      }
+      markDirty();
+      renderKPIs();
+    });
+  });
+
+  /* ✅ ADICIONAR ITEM (FUNCIONA SEMPRE) */
+  $("addItemBtn").addEventListener("click", ()=>{
+    const d = ensureDay(currentDay);
+    d.items.push({ name:"Novo item", qty:0, price:0 });
+    markDirty();
+    renderItems();
+    renderKPIs();
+
+    // foca o novo item para digitar logo
+    setTimeout(()=>{
+      const rows = $("itemsBody").querySelectorAll("tr");
+      const last = rows[rows.length-1];
+      if(last){
+        const input = last.querySelector("input[type='text']");
+        if(input) input.focus();
+      }
+    }, 0);
+  });
+
+  $("addDespesaBtn").addEventListener("click", ()=>{
+    const d = ensureDay(currentDay);
+    d.despesas.push({ cat:"Café", val:0, obs:"" });
+    markDirty();
+    renderDespesas();
+    renderKPIs();
+  });
+
+  $("newDayBtn").addEventListener("click", ()=>{
+    const date = $("dayPicker").value || todayISO();
+    if(db.days[date]){
+      if(!confirm("Este dia já existe. Queres substituir por um dia vazio?")) return;
+    }
+    db.days[date] = emptyDay();
+    currentDay = date;
+    markDirty();
+    renderAll();
+  });
+
+  $("copyPrevBtn").addEventListener("click", ()=>{
+    const date = $("dayPicker").value || todayISO();
+    const prev = new Date(date + "T00:00:00");
+    prev.setDate(prev.getDate()-1);
+    const pad = n => String(n).padStart(2,"0");
+    const prevISO = `${prev.getFullYear()}-${pad(prev.getMonth()+1)}-${pad(prev.getDate())}`;
+
+    if(!db.days[prevISO]){
+      alert("Não existe dia anterior guardado para copiar.");
+      return;
+    }
+
+    const from = ensureDay(prevISO);
+    const to = ensureDay(date);
+
+    to.items = from.items.map(it=>({ name: (it.name||"").trim(), qty:0, price: num(it.price) }));
+    markDirty();
+    renderItems();
+    renderKPIs();
+    alert("Itens e preços copiados. Quantidades ficaram a zero.");
+  });
+
+  $("exportCSVBtn").addEventListener("click", exportCSV);
+  $("exportJSONBtn").addEventListener("click", exportJSON);
+
+  $("importJSONBtn").addEventListener("click", ()=> $("importJSONInput").click());
+  $("importJSONInput").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0];
+    if(f) importJSON(f);
+    e.target.value = "";
+  });
+
+  $("resetBtn").addEventListener("click", ()=>{
+    const a = confirm("ATENÇÃO: Isto vai apagar TODOS os dados guardados neste navegador. Continuar?");
+    if(!a) return;
+    const b = confirm("Última confirmação: apagar mesmo tudo?");
+    if(!b) return;
+
+    localStorage.removeItem(STORAGE_KEY);
+    db = { settings:{ currency:"€", logoDataUrl:"" }, days:{} };
+    $("currencySel").value = "€";
+    setLogo("");
+    currentDay = todayISO();
+    $("dayPicker").value = currentDay;
+    ensureDay(currentDay);
+    renderAll();
+    saveDB();
+    alert("Dados apagados. Base limpa.");
+  });
+
+  $("logoBtn").addEventListener("click", ()=> $("logoInput").click());
+  $("logoInput").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> setLogo(reader.result);
+    reader.readAsDataURL(f);
+  });
+
+  $("recalcMonthBtn").addEventListener("click", renderMonth);
+  $("monthPicker").addEventListener("change", renderMonth);
+
+  renderAll();
+  setSaved(true);
+});
+</script>
+</body>
+</html>
